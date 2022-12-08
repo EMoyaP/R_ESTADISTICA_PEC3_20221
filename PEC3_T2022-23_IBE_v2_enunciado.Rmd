@@ -1,0 +1,266 @@
+---
+title: "PEC-3 Otoño 2022"
+author: "UOC"
+dato: ''
+output:
+  pdf_document: default
+  word_document: default
+fontsize: 12pt
+---
+
+
+Os puede ser útil consultar el siguiente material:
+
+1. Reto 2. Probabilidad y variables aleatorias: Módulo Probabilidad y variables aleatorias.
+1. Reto 2. Probabilidad y variables aleatorias: Variables aleatorias. Actividades Resueltas.
+1. Reto 2. Probabilidad y variables aleatorias: Distribuciones de probabilidad e inferencia estadística con R.
+
+
+# NOMBRE: Eugenio Moya Pérez
+
+# PEC3
+
+## Muy importante:
+En todas las preguntas, tenéis que indicar qué tipo de variable aleatoria usáis y plantear la probabilidad que se pide, como por ejemplo $P(X=4), P(X\leq 3)$, etc, antes de poner las instrucciones y hacer los cálculos con R. Procurad usar las funciones: dnorm, pnorm, dbinom, ...
+
+Toda respuesta que no lleve estas explicaciones muy comentadas serán consideradas incorrectas aunque se dé un resultado numérico correcto.
+
+\newpage
+
+## Pregunta 1 (30%) 
+El último libro de un famoso escritor ha tenido un gran éxito, hasta el punto que el $77\%$ de los forofos a la lectura ya lo han leído. Consideramos un club de lectura con $350$ socios. Se pide:
+
+**(a)** ¿Cuál es la probabilidad que como máximo $280$ (incluido el $280$) de los socios del club hayan leído el libro? (10%)
+
+
+**Respuesta a)**
+
+La probabilidad de que **máximo 280** socios se haya leido el libro es una distribucion binominal con los parametros siguientes:
+
+X = socios = 350
+p = han leido el libro = 0.77
+
+por lo que
+
+p(X $\leq$ 280)
+
+```{r}
+print (c("Probabilidad:", (round(pbinom(280, 350, 0.77),4))))
+```
+
+
+**(b)** ¿Cuál es la probabilidad que como mínimo $275$ (incluido el $275$) de los socios del club hayan leído el libro? (10%)
+
+
+**Respuesta b)**
+
+La probabilidad de que **mínimo 275** socios se haya leido el libro es una distribucion binominal con los parametros siguientes:
+
+X = socios = 350
+
+p = han leido el libro = 0.77
+
+por lo que
+
+p(X $\geq$ 275)
+
+```{r}
+print (c("Probabilidad:", (round(sum(dbinom(275:350, size = 350, prob = 0.77)),4))))
+
+```
+
+\newpage
+
+**(c)** ¿Cuál es el número esperado de socios del club que han leído el libro? ¿Cuál es su desviación típica? (10%)
+
+**Respuesta c)**
+
+X = número esperado de socios que hayan leído el libro
+n = socios (350)
+p = probabilidad(0.77)
+
+$X = n * p$
+
+```{r}
+n <- 350
+p <- 0.77
+X <- c(n * p)
+
+print (c("Número socios esperados:", X))
+
+```
+
+Desviación típica:
+Para calcular la desviación típica usaremos la siguiente fórmula
+
+$s^2 =n*p*(1-p)$
+
+$s =\sqrt(n*p*(1-p))$
+
+```{r}
+s <- sqrt(n*p*(1-p))
+print (c("Desviación típica:", round(s,4)))
+```
+
+
+```{r,echo=FALSE}
+options(scipen=999)
+```
+
+\newpage
+
+## Pregunta 2 (35%)
+El tiempo de vida ($X$) de una bombilla de la luz diurna de un modelo determinado de coche se distribuye según una variable aleatoria exponencial con media de $5000$h. Se pide:
+
+**(a)** ¿Cuál es la probabilidad que una bombilla tenga una duración comprendida entre las $3500$ y $4000$h? (10%)
+
+**Respuesta a)**
+
+D = Duración
+p = probabilidad
+Media = 5000, su valor $\lambda$ sería la inversa
+
+$\lambda = \frac {1}{5000}$
+
+
+p (3500 < D < 4000)
+
+ - Calculamos los dos intervalos:
+
+**p(X <= 3500)**
+```{r}
+duracionMinima<-pexp(3500, rate = 1/5000)
+
+print (c("Duración mínima:", round(duracionMinima,4)))
+
+```
+**p(X <= 4000)**
+```{r}
+duracionMaxima<-pexp(4000, rate = 1/5000)
+
+print (c("Duración máxima:", round(duracionMaxima,4)))
+```
+- Una vez obtenidos los intervalos procedemos a calcular la diferencia para hayar la probabilidad de que se encuentre entre ambas:
+
+```{r}
+probabilidadBombilla<-duracionMaxima - duracionMinima
+print (c("p (3500 < D < 4000) =", round(probabilidadBombilla,4)))
+```
+
+\newpage
+
+**(b)** ¿Cuántas horas $t$ tendría que durar una bombilla para que la probabilidad que dure más de estas $t$ horas sea del $0.80$? (15%)
+
+**Respuesta b)**
+
+t = tiempo en horas
+p(X > t) = 0.80
+
+```{r}
+t<-qexp(0.8, 1/5000, lower.tail = FALSE)
+
+print (c("Horas:", round(t,4)))
+```
+
+
+**(c)** El departamento de control de la calidad realiza una secuencia de inspecciones. ¿Cuál es la probabilidad que la primera bombilla que no supere las $4000$ horas de vida sea la sexta bombilla inspeccionada? (10%)
+Observación: Si $Y$ es una variable aleatoria geométrica de parámetro $p$ para calcular $P(Y=k)$ usaremos en R la función $dgeom(x=k-1, prop=p)$. Fijaos que en la función tenemos que poner $k-1$.
+
+**Respuesta c)**
+
+k = bombillas = 6
+
+```{r}
+k<-6
+
+print (c("Probabilidad sexta bombilla:", round(dgeom(k-1,duracionMaxima),4)))
+
+```
+
+\newpage
+
+## Pregunta 3 (35%)
+La longitud ($X$) de un estuche de cintas magnéticas se distribuye según una distribución normal con media $10.3$ mm y desviación típica $0.2$ mm.
+
+**(a)** ¿Cuál es la probabilidad que la longitud de un estuche esté dentro de los límites de especificación? Los límites de especificación del fabricante dicen que la longitud de un estuche tiene que estar en el intervalo $(9.5, 10.5)$mm. (10%)
+
+**Respuesta a)**
+
+X = Longitud de estuche
+
+p = probabilidad de la longitud del estuche
+
+p(9.5 <= X <= 10.5)
+
+$p = intervaloMayor - intervaloMenor$
+
+```{r}
+p <- pnorm(10.5, mean=10.3, sd=0.2) -
+  pnorm(9.5, mean=10.3, sd=0.2)
+
+print (c("Probabilidad:", round(p,4)))
+
+```
+
+**(b)** Si la desviación típica se mantiene a $0.2$mm, ¿a qué valor se tendría que ajustar la media del proceso para que sea máxima la probabilidad que un estuche tenga una longitud comprendida entre los límites de especificación? ¿Cuánto vale esta probabilidad? (10%)
+
+**Respuesta b)**
+
+- Media Ajustada:
+sd=0.2
+p(9.5 < X < 10.5)
+
+a=9.5
+b=10.5
+
+$media = \frac{b+a}{2} =\frac{10.5 + 9.5}{2}$
+
+```{r}
+a <- 9.5
+b <- 10.5
+mediaAjustada <- (b+a)/2
+
+print (c("Media Ajustada:", round(mediaAjustada,4)))
+```
+\newpage
+
+- Probabilidad ajustada:
+
+```{r}
+pr <- pnorm(c(9.5,10.5), mediaAjustada, 0.2)
+
+proMeAjustada<-pr[2]-pr[1]
+print (c("Probabilidad Media Ajustada:", round(proMeAjustada,4)))
+```
+
+**(c)** Si se quiere que la probabilidad del apartado anterior sea de $0.999$, ¿cuál tendría que ser el valor de la desviación típica? (15%)
+
+**Respuesta b)**
+
+$p (9.5 \leq X \leq 10.5) = 0.999$
+
+$d = \frac{X - \mu}{\sigma} = \frac{X - 10}{\sigma}$
+
+$p (\frac{9.5 - 10}{\sigma} \leq d \leq \frac{10.5 - 10}{\sigma}) =$
+
+$d = 1 - 2p(\frac{-0.5}{\sigma}) = 0.999$
+
+$d(\frac{-0.5}{\sigma}) = \frac{1-0.999}{2} = 0.0005$
+
+
+```{r}
+pAcumulada <- 0.0005
+qnorm(pAcumulada, 0,1)
+```
+$\frac{-0.5}{\sigma} = pAcumulada$
+
+$\sigma =\frac{-0.5}{-3.290527} = \frac{0.5}{3.290527}$
+
+```{r}
+
+sd <- 0.5/3.290527
+
+print (c("Desviación típica:", round(sd,4)))
+
+```
+
